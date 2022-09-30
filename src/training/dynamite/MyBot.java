@@ -2,9 +2,11 @@ package training.dynamite;
 
 import com.softwire.dynamite.bot.Bot;
 import com.softwire.dynamite.game.*;
+import com.softwire.dynamite.runner.Result;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class MyBot implements Bot {
 
@@ -24,6 +26,8 @@ public class MyBot implements Bot {
 
     private int roundsSinceLastDynamite;
 
+    private int opponentRhythm;
+
 
 
     public MyBot() {
@@ -42,12 +46,17 @@ public class MyBot implements Bot {
         }
 
         Round lastRound = (Round)gamestate.getRounds().get(gamestate.getRounds().size() - 1);
+        Move opponentsLastMove = lastRound.getP2();
 
-        addToPreviousMoveList(lastRound.getP2());
+        addToPreviousMoveList(opponentsLastMove);
 
-        dynamiteSpamCheck(lastRound.getP2());
+        dynamiteSpamCheck(opponentsLastMove);
 
         if (dynamiteSpamCounter > 2) {
+            return Move.W;
+        }
+
+        if (isThereRhythm() && gamestate.getRounds().size() % opponentRhythm == 0) {
             return Move.W;
         }
 
@@ -80,6 +89,23 @@ public class MyBot implements Bot {
         } else {
             dynamiteSpamCounter = 0;
         }
+    }
+
+    public boolean isThereRhythm() {
+
+        if (opponentDynamiteRhythm.size() < 2) {
+            return false;
+        }
+
+        Integer firstRound = opponentDynamiteRhythm.get(1);
+
+        for (Integer rounds: opponentDynamiteRhythm) {
+            if (!Objects.equals(rounds, firstRound)) {
+                return false;
+            }
+        }
+        opponentRhythm = firstRound;
+        return true;
     }
 
     public String getMoveWeighted(List<Move> opponentsMoves) {
@@ -126,7 +152,6 @@ public class MyBot implements Bot {
 
         return false;
 
-
     }
 
     public Move randomMove(String weight) {
@@ -140,7 +165,6 @@ public class MyBot implements Bot {
             case "Rock" : weighted = Move.R; unweighted1 = Move.S; unweighted2 = Move.P; break;
             case "Scissors" : weighted = Move.S; unweighted1 = Move.R; unweighted2 = Move.P; break;
             default: weighted = Move.P; unweighted1 = Move.R; unweighted2 = Move.S;
-
         }
 
         if (weightIndex > 3) {
