@@ -107,12 +107,12 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "WebServerToolWindowFactoryState": "false",
-    "last_opened_file_path": "/Users/tbart/Training/Dynamite-Java"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/tbart/Training/Dynamite-Java&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Work\Academy\Code\Dynamite-Java" />
@@ -184,7 +184,9 @@
       <option name="presentableId" value="Default" />
       <updated>1548267251649</updated>
       <workItem from="1548267253231" duration="7209000" />
-      <workItem from="1664527418624" duration="14227000" />
+      <workItem from="1664527418624" duration="15895000" />
+      <workItem from="1664551294927" duration="1554000" />
+      <workItem from="1664784830160" duration="4109000" />
     </task>
     <servers />
   </component>

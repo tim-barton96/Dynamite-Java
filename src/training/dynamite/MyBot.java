@@ -12,6 +12,8 @@ public class MyBot implements Bot {
 
     private List<Move> opponentsMoves = new ArrayList<>();
 
+    private int[] timesRPSplayed = {1, 1, 1};
+
     private int dynamiteCounter = 0;
 
     private int[] dynamiteRhythm = new int[2];
@@ -27,6 +29,12 @@ public class MyBot implements Bot {
     private int roundsSinceLastDynamite;
 
     private int opponentRhythm;
+
+    private int swagCount;
+
+    private boolean slimeball = false;
+
+    private int slimeballCounter;
 
 
 
@@ -47,10 +55,12 @@ public class MyBot implements Bot {
 
         Round lastRound = (Round)gamestate.getRounds().get(gamestate.getRounds().size() - 1);
         Move opponentsLastMove = lastRound.getP2();
+        Move myLastMove = lastRound.getP1();
 
-        addToPreviousMoveList(opponentsLastMove);
+        addToPreviousMoveList(opponentsLastMove, myLastMove);
 
         dynamiteSpamCheck(opponentsLastMove);
+
 
         if (dynamiteSpamCounter > 2) {
             return Move.W;
@@ -73,7 +83,7 @@ public class MyBot implements Bot {
         return randomMove(weight);
     }
 
-    public void addToPreviousMoveList(Move lastMove) {
+    public void addToPreviousMoveList(Move lastMove, Move demonTime) {
         opponentsMoves.add(lastMove);
         if (lastMove == Move.D) {
             opponentDynamiteRhythm.add(roundsSinceLastDynamite);
@@ -81,6 +91,24 @@ public class MyBot implements Bot {
         } else {
             roundsSinceLastDynamite++;
         }
+        switch (lastMove) {
+            case R: timesRPSplayed[0]++; break;
+            case P: timesRPSplayed[1]++; break;
+            case S: timesRPSplayed[2]++;
+        }
+        if (swagCount > 0 && lastMove == Move.W) {
+            slimeball = true;
+            slimeballCounter = swagCount;
+        } else if (slimeball && swagCount == slimeballCounter && lastMove != Move.W) {
+            slimeball = false;
+        }
+
+        if (lastMove == demonTime) {
+            swagCount++;
+        } else {
+            swagCount = 0;
+        }
+
     }
 
     public void dynamiteSpamCheck(Move lastMove) {
@@ -110,41 +138,42 @@ public class MyBot implements Bot {
 
     public String getMoveWeighted(List<Move> opponentsMoves) {
 
-        int timesRockPlayed = 1;
-        int timesScissorsPlayed = 1;
-        int timesPaperPlayed = 1;
-
-        for (Move move :opponentsMoves) {
-            switch (move) {
-                case R : timesRockPlayed++; break;
-                case P: timesPaperPlayed++; break;
-                case S: timesScissorsPlayed++; break;
-            }
-        }
+        int timesRockPlayed = timesRPSplayed[0];
+        int timesPaperPlayed = timesRPSplayed[1];
+        int timesScissorsPlayed = timesRPSplayed[2];
 
 
         if (timesRockPlayed > timesScissorsPlayed && timesRockPlayed > timesPaperPlayed) {
-            weightIndex = (timesRockPlayed / timesScissorsPlayed + timesRockPlayed / timesPaperPlayed)/2;
+                weightIndex = ((timesRockPlayed / timesScissorsPlayed + timesRockPlayed / timesPaperPlayed) / 2);
             return "Paper";
         } else if (timesPaperPlayed > timesRockPlayed && timesPaperPlayed > timesScissorsPlayed) {
-            weightIndex = (timesPaperPlayed / timesRockPlayed + timesPaperPlayed / timesScissorsPlayed) / 2;
+                weightIndex = (timesPaperPlayed / timesRockPlayed + timesPaperPlayed / timesScissorsPlayed) / 2;
             return "Scissors";
         }
+            weightIndex = (timesScissorsPlayed / timesPaperPlayed + timesScissorsPlayed / timesRockPlayed) / 2;
 
-        weightIndex = (timesScissorsPlayed / timesPaperPlayed + timesScissorsPlayed / timesRockPlayed)/2;
 
         return "Rock";
 
     }
 
     public boolean isItDynamiteTime() {
+
+        if (slimeball && swagCount == slimeballCounter) {
+            return false;
+        }
+
+        if (swagCount > 2) {
+            return true;
+        }
+
         if(dynamiteRhythm[0] == 0) {
             if (dynamiteRhythm[1] > 0) {
                 dynamiteRhythm[1]--;
                 return true;
             } else if (dynamiteRhythm[1] == 0) {
-                dynamiteRhythm[0] = (int)Math.ceil(Math.random() * 2.0);
-                dynamiteRhythm[1] = (int)Math.ceil(Math.random() * 2.0);
+                dynamiteRhythm[0] = (int)Math.floor(Math.random() * 20.0);
+                dynamiteRhythm[1] = (int)Math.floor(Math.random() * 2.0);
             }
         } else {
             dynamiteRhythm[0]--;
@@ -155,7 +184,7 @@ public class MyBot implements Bot {
     }
 
     public Move randomMove(String weight) {
-        int random = (int)(Math.random() * 10.0);
+        int random = (int)Math.floor((Math.random() * 10.0));
 
         Move weighted;
         Move unweighted1;
@@ -167,9 +196,6 @@ public class MyBot implements Bot {
             default: weighted = Move.P; unweighted1 = Move.R; unweighted2 = Move.S;
         }
 
-        if (weightIndex > 3) {
-            return weighted;
-        }
 
         if (random < 3) {
             return unweighted1;
