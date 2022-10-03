@@ -196,7 +196,6 @@ public class MyBot implements Bot {
             default: weighted = Move.P; unweighted1 = Move.R; unweighted2 = Move.S;
         }
 
-
         if (random < 3) {
             return unweighted1;
         } else if (random < 6) {
