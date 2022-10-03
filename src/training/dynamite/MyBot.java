@@ -96,12 +96,7 @@ public class MyBot implements Bot {
             case P: timesRPSplayed[1]++; break;
             case S: timesRPSplayed[2]++;
         }
-        if (swagCount > 0 && lastMove == Move.W) {
-            slimeball = true;
-            slimeballCounter = swagCount;
-        } else if (slimeball && swagCount == slimeballCounter && lastMove != Move.W) {
-            slimeball = false;
-        }
+
 
         if (lastMove == demonTime) {
             swagCount++;
@@ -159,9 +154,6 @@ public class MyBot implements Bot {
 
     public boolean isItDynamiteTime() {
 
-        if (slimeball && swagCount == slimeballCounter) {
-            return false;
-        }
 
         if (swagCount > 2) {
             return true;
